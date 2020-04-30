@@ -3,7 +3,7 @@
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
-
+    std::cerr << "hice un cambio" << '\n';
     LectorDeHtml lector;
     lector.set_archivo("html.txt");
 
