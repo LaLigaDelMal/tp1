@@ -9,6 +9,8 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 template <class T> class Lista
 {
 private:
@@ -17,12 +19,10 @@ private:
 public:
     Lista();
     Lista(Nodo<T>* n);
-
     void add(T d);
     bool es_vacia();
     T cabeza();
     void borrar();     // Borra el Nodo cabeza
-
 };
 
 #endif

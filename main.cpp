@@ -1,14 +1,31 @@
 #include <iostream>
+#include <cstdlib>
+#include <string>
+#include <fstream>
+
 #include "LectorDeHtml.h"
+#include "LectorDeHtml.cpp"
+#include "Nodo.h"
+#include "Nodo.cpp"
+#include "Lista.h"
+#include "Lista.cpp"
+#include "Pila.h"
+#include "Pila.cpp"
+
+using namespace std;
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    std::cerr << "hice un cambio" << '\n';
+    std::cout << "Inicio" << std::endl;
+
     LectorDeHtml lector;
-    lector.set_archivo("html.txt");
+    lector.set_archivo("archivito.html");
 
-    // Falta imprimir la pila que devuelve el metodo get_pila de la clase LectorDeHtml
+    Pila<string>* p = new Pila<string>();
+    //pila = lector.get_pila();
+    //pila->toPrint("caca");
+
+    //TODO Falta imprimir la pila que devuelve el metodo get_pila de la clase LectorDeHtml
 
 
-    return 0;
+    return 1;
 }
