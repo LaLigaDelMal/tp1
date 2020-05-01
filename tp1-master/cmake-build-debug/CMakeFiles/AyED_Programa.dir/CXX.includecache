@@ -1,0 +1,74 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/LectorDeHtml.cpp
+LectorDeHtml.h
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/LectorDeHtml.h
+
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/LectorDeHtml.h
+Pila.h
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Pila.h
+cstdlib
+-
+iostream
+-
+string
+-
+fstream
+-
+
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Lista.cpp
+Lista.h
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Lista.h
+
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Lista.h
+Nodo.h
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Nodo.h
+cstdlib
+-
+iostream
+-
+string
+-
+
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Nodo.cpp
+Nodo.h
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Nodo.h
+
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Nodo.h
+cstdlib
+-
+string
+-
+
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Pila.cpp
+Pila.h
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Pila.h
+
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Pila.h
+Lista.h
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Lista.h
+string
+-
+cstdlib
+-
+
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/main.cpp
+iostream
+-
+LectorDeHtml.cpp
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/LectorDeHtml.cpp
+Pila.cpp
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Pila.cpp
+Nodo.cpp
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Nodo.cpp
+Lista.cpp
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/Lista.cpp
+LectorDeHtml.h
+C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/LectorDeHtml.h
+
