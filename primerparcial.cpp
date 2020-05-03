@@ -74,7 +74,7 @@ class LectorDeHtml{
 };
 
 void LectorDeHtml::set_archivo(){
-	archivo.open("archivito.html");
+	archivo.open("archivo.html");
 	if(archivo.fail()){
 		cout<<"El archivo no pudo ser abierto.";
 		exit(1);
@@ -96,7 +96,7 @@ void LectorDeHtml::cargarEnPila(){
 			}
         nodoTexto += lineaDeTexto.at(aux);
         p->apilar(nodoTexto);
-        //cout<<nodoTexto<<endl;
+        cout<<nodoTexto<<endl;
         nodoTexto = "";
 		}
       //GUARDA EL TEXTO
@@ -108,7 +108,7 @@ void LectorDeHtml::cargarEnPila(){
 					aux++;
 			    }
 		    p->apilar(nodoTexto);
-		    //cout<<nodoTexto<<endl;
+		    cout<<nodoTexto<<endl;
 	     	nodoTexto = "";
 		    }
 	    }
@@ -122,5 +122,5 @@ int main (){
 	lector.set_archivo();
 	lector.cargarEnPila();
 
-	return 1;
+	return 0;
 }
