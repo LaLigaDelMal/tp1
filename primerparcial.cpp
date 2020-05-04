@@ -141,9 +141,9 @@ public:
         //recorrer Lista y ejecutar sus metodos show();
         std::cout << tipoToken << '\n';
     };
-    void addC(string sr){
-        tagsAnidados->add(sr);
-        cout << "Se añadio '"<< sr << "' al token " << tipoToken<< '\n';
+    void addC(string nodo){
+        tagsAnidados->add(nodo);
+        cout << "Se añadio '"<< nodo << "' al token " << tipoToken<< '\n';
     }
 };
 
@@ -173,7 +173,7 @@ int main(){
     cout << barra() << '\n' << "------------------  Parte 2: Parsing  -------------------" << '\n' << barra() << endl;
     TK_text *tabla = new TK_text("<tabla>");
     tabla->show();
-    //tabla->addC("<tr>");
+    tabla->addC("<tr>");
 
 
     cout << barra() << '\n' << "--------------------  Parte 3: Show  --------------------" << '\n' << barra() << endl;
