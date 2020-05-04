@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
-
+#include <cstdlib>
+#include <cassert>
 #include <cstdlib>
 #include <sstream>
 using namespace std;
@@ -129,28 +130,45 @@ void LectorDeHtml::cargarEnPila(){
 //-------------------------------------------------------------------------------------------
 //Clase abstracta para crear Tokens
 
-class TokenHTML{
+template <class T> class TokenHTML{
 public:
     string tipoToken;      //ej: "<text>", "<tr>"
-    Lista<string> *tagsAnidados;
+    Lista<T> *tagsAnidados = new Lista<T>();
     //ej: tags dentro de "<table>" seran "<tr>", entonces tagsAnidados sera una lista de "<tr>"
     //lo mismo para el contenido de "<text>" o "<th>"
 
-    TokenHTML(string token){tipoToken=token;};  //TODO ver si se pasa un Nodo por argumentos
-    virtual void show(){
-        //recorrer Lista y ejecutar sus metodos show();
-        std::cout << tipoToken << '\n';
-    };
-    void addC(string nodo){
-        tagsAnidados->add(nodo);
-        cout << "Se añadio '"<< nodo << "' al token " << tipoToken<< '\n';
-    }
+    TokenHTML(string token){tipoToken=token;};
+    virtual void show();
+    void addTagAnidado(T tag);
 };
 
-class TK_text : public TokenHTML{
+template <class T> void TokenHTML<T>::show(){
+    //recorrer Lista y ejecutar sus metodos show();
+    std::cout << tagsAnidados->cabeza() << '\n';
+};
+
+template <class T> void TokenHTML<T>::addTagAnidado(T tag){
+    tagsAnidados->add(tag);
+    //cout << "Se aniadio '"<< nodo << "' al token " << tipoToken<< endl;
+};
+
+//------------------------------------------------------------------------------------------------
+//Clases de Tokens
+
+template <class T> class TK_text : public TokenHTML<T>{
 public:
-    TK_text(string token):TokenHTML(token){};
+    TK_text(string token):TokenHTML<T>(token){};
     //Hereda y ejecuta automaticamente el constructor de TokenHTML
+};
+
+template <class T> class TK_tr : public TokenHTML<T>{
+public:
+    TK_tr(string token):TokenHTML<T>(token){};
+};
+
+template <class T> class TK_td : public TokenHTML<T>{
+public:
+    TK_td(string token):TokenHTML<T>(token){};
 };
 
 //-------------------------------------------------------------------------------------------
@@ -171,13 +189,21 @@ int main(){
 
 
     cout << barra() << '\n' << "------------------  Parte 2: Parsing  -------------------" << '\n' << barra() << endl;
-    TK_text *tabla = new TK_text("<tabla>");
-    tabla->show();
-    tabla->addC("<tr>");
+
+    
+
+    // TK_td<string> *td = new TK_td<string>("<td>");
+    // td->addTagAnidado("Soy un td");
+    // td->show();
+    //
+    // TK_tr<TK_td> *tr = new TK_tr<TK_td>("<tr>");
+    // //tr->addTagAnidado(td);
+    // //tr->show();
 
 
     cout << barra() << '\n' << "--------------------  Parte 3: Show  --------------------" << '\n' << barra() << endl;
 
-    delete tabla;
+    //delete td;
+    //delete tr;
     return 1;
 };
