@@ -37,6 +37,7 @@ public:
     bool esvacia(); //verifica si la lista este vacia
     T cabeza(); //retorna el dato del primer nodo
     void borrar(); //borra la cabeza
+    Nodo<T>* getNodo();
 };
 
 
@@ -58,6 +59,18 @@ template <class T> T Lista<T>::cabeza(void){
     return czo->get_dato();
 }
 
+template <class T> void Lista<T>::borrar() {
+    if (!this->esvacia()) {
+        Nodo<T> *tmp = czo;
+        czo = czo->get_next();
+        delete tmp;
+    }
+}
+
+template <class T> Nodo<T>* Lista<T>::getNodo() {
+    return czo->get_next();
+}
+
 //-------------------------------------------------------------------------------------------
 //Clase Lector de HTML
 
@@ -65,8 +78,8 @@ template <class T> class Pila:public Lista<T>{
 public:
     Pila(){Lista<T>();};
     void apilar(T d){this->add(d);};
-    T tope(void){return this->cabeza();};
-    void desapilar(void){this->borrar();};
+    T tope(){return this->cabeza();};
+    void desapilar(){this->borrar();};
     bool pilavacia(){return this->esvacia();};
 };
 
@@ -81,6 +94,7 @@ private:
 public:
     void set_archivo(); //Carga el archivo html
     void cargarEnPila();
+    Pila<string>* get_pila();
 };
 
 void LectorDeHtml::set_archivo(){
@@ -125,6 +139,10 @@ void LectorDeHtml::cargarEnPila(){
             }
         }
     }
+}
+
+Pila<string>* LectorDeHtml::get_pila() {
+    return p;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -190,7 +208,23 @@ int main(){
 
     cout << barra() << '\n' << "------------------  Parte 2: Parsing  -------------------" << '\n' << barra() << endl;
 
-    
+    string ultimoNodo;
+    bool salir1 = true;
+    while(salir1){
+        Pila<string>* pilaDeLectura = lector.get_pila();
+        bool salir = true;
+        while (salir) {
+                pilaDeLectura->desapilar();
+                std::cout << pilaDeLectura->tope() << '\n';
+                if(pilaDeLectura->tope().empty()){
+                    std::cout << "Todo bien" << '\n';
+                    //ultimoNodo = pilaDeLectura->tope();
+                    salir=false;
+                }else{
+                }
+        }
+        salir1=false;
+    }
 
     // TK_td<string> *td = new TK_td<string>("<td>");
     // td->addTagAnidado("Soy un td");

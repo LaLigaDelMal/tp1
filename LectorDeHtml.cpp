@@ -8,8 +8,7 @@ using namespace std;
 
 
 //// Interfaz de la clase Nodo
-template <class T> class Nodo
-{
+template <class T> class Nodo{
 private:
     T dato;
     Nodo* next;
@@ -27,11 +26,8 @@ public:
     bool es_vacio();
 };
 
-
-
 //// Interfaz de la clase Lista
-template <class T> class Lista
-{
+template <class T> class Lista{
 private:
     Nodo<T>* czo;
 
@@ -44,8 +40,6 @@ public:
     T cabeza();
     void borrar();     // Borra el Nodo cabeza
 };
-
-
 
 //// Interfaz de la clase Pila
 template <class T> class Pila:public Lista<T>        // Hereda los miembros publicos de la clase Lista
@@ -247,59 +241,40 @@ Pila<string>* LectorDeHtml::get_pila() {
 void LectorDeHtml::cargarEnPila(string textoDelArchivo) {
 
    // Descomentar la siguiente linea para ver como trabaja la recursion
-   // cout << textoDelArchivo << endl;
-
+    cout << textoDelArchivo << endl;
     static string token;             // Cadena de texto auxiliar para agregar caracteres al token
     static string texto;             // Cadena de texto donde se almacena el texto recibido por la funcion
-
     texto = textoDelArchivo;
-
     try {      // El metodo erase de la clase string arroja una excepcion que no afecta la modificacion de la cadena pero detiene la ejecucion si no se maneja.
-
         if (!texto.empty()) {    // Comprueba que la cadena de texto no se haya terminado
-
-
             if (texto.at(0) == '<') {
-
-                if (!token.empty())        // Si el proximo caracter es un < y la cadena auxiliar no esta vacia, significa que el token contiene el texto: <p>este texto</p>.
-                {
+                if (!token.empty()){        // Si el proximo caracter es un < y la cadena auxiliar no esta vacia, significa que el token contiene el texto: <p>este texto</p>.
                     p->apilar(token);     // Se carga en la pila el token
                     token = "";           // Se vacia la cadena auxiliar para cargar un nuevo token.
                     cargarEnPila(texto);  // Llamada recursiva.
-
-                }
-                else
-                {
+                }else{
                     token += texto.at(0);      // Agrego el caracter a la cadena
                     texto.erase(0, 1);     // Eliminamos el caracter que acabamos de agregar a la cadena auxiliar
                     cargarEnPila(texto);
                 }
             }
-
-            if ((texto.at(0) != '<') && (texto.at(0) != '>'))
-            {
+            if ((texto.at(0) != '<') && (texto.at(0) != '>')){
                 token += texto.at(0);
                 texto.erase(0, 1);
                 cargarEnPila(texto);
             }
-
-
-            if (texto.at(0) == '>')
-            {
+            if (texto.at(0) == '>'){
                 token += texto.at(0);      // Se agrega el caracter > y se carga el token en la pila
-
                 p->apilar(token);
-
                 token = "";
                 texto.erase(0, 1);
                 cargarEnPila(texto);
             }
-
         }
     }
     catch (...)     // Los tres puntos ... indican que atrapa cualquier tipo de excepcion
     {
-
+        std::cout << "Ocurrio un error..." << '\n';
     }
 }
 
@@ -321,7 +296,7 @@ void LectorDeHtml::leerTexto() {
     int main() {
 
     LectorDeHtml lector;
-    lector.set_archivo("pagina.html");
+    lector.set_archivo("archivito.html");
 
     // Codigo de prueba para controlar carga de tokens en la pila
 
