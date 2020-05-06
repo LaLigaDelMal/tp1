@@ -233,42 +233,6 @@ int main(){
 
     cout << barra() << '\n' << "------------------  Parte 2: Parsing  -------------------" << '\n' << barra() << endl;
 
-    Nodo<string> *ultimoNodo = new Nodo<string>();
-    Nodo<string> *elemento;
-
-    Pila<string>* pilaDeLectura = lector.get_pila();
-    Pila<string>* pilaDeTokens;
-
-
-    while( !(ultimoNodo == pilaDeLectura->getElemento()) ){
-        *pilaDeTokens = *pilaDeLectura;  //Reseteo de la pila de Tokens
-        cout << "Ultimo nodo registrado: " << ultimoNodo->get_dato() << "   -   " << "Ultimo nodo en la pila: " << lector.get_pila()->getElemento()->get_dato() << endl;
-
-        while( !pilaDeTokens->pilavacia() ){
-            elemento = pilaDeTokens->getElemento();
-            //std::cout << "Nodo actual: '" << elemento->get_dato()  << "'  - Siguiente nodo: "<< elemento->get_next()->get_dato()<< '\n';
-            if( elemento->get_next()->get_dato().empty()  || elemento->get_next()==ultimoNodo ){
-                ultimoNodo = elemento;
-
-                //TODO Crear objeto token correspondiente.
-                //TODO Diferenciar si el token cerro, para poder definir si lleva mas tokens adentro
-
-                cout << "Voy a salir: "<< ultimoNodo->get_dato() << endl;
-                break;
-            }
-            pilaDeTokens->desapilar();
-        }
-        pilaDeTokens = lector.get_pila();
-    }
-
-    // TK_td<string> *td = new TK_td<string>("<td>");
-    // td->addTagAnidado("Soy un td");
-    // td->show();
-    //
-    // TK_tr<TK_td> *tr = new TK_tr<TK_td>("<tr>");
-    // //tr->addTagAnidado(td);
-    // //tr->show();
-
 
     cout << barra() << '\n' << "--------------------  Parte 3: Show  --------------------" << '\n' << barra() << endl;
 
