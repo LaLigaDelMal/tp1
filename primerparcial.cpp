@@ -38,6 +38,8 @@ public:
     T cabeza(); //retorna el dato del primer nodo
     void borrar(); //borra la cabeza
     Nodo<T>* getNodo();
+    Lista<T>* resto(void);
+    T suma(T i);
 };
 
 
@@ -68,7 +70,26 @@ template <class T> void Lista<T>::borrar() {
 }
 
 template <class T> Nodo<T>* Lista<T>::getNodo() {
-    return czo->get_next();
+    if (this->esvacia()) {
+        cout << " Error, Cabeza de lista vacia";
+        return NULL;
+    }
+    return czo;
+}
+
+
+template <class T> Lista<T>* Lista<T>::resto(void){
+    Lista* l = new Lista(czo->get_next());
+    return (l);
+}
+
+template <class T> T Lista<T>::suma(T i){
+    if (this->esvacia()) {
+        return i;
+    }
+    else {
+        return this->resto()->suma(i + this->cabeza());
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -81,6 +102,9 @@ public:
     T tope(){return this->cabeza();};
     void desapilar(){this->borrar();};
     bool pilavacia(){return this->esvacia();};
+    Nodo<T>* getElemento(){return this->getNodo();};
+    Lista<T>* resto(){return this->resto();};
+    T suma(){return this->suma();};
 };
 
 //-------------------------------------------------------------------------------------------
@@ -205,25 +229,36 @@ int main(){
     lector.set_archivo();
     lector.cargarEnPila();
 
+    //cout << "Presione Enter para continuar"; cin.ignore();
 
     cout << barra() << '\n' << "------------------  Parte 2: Parsing  -------------------" << '\n' << barra() << endl;
 
-    string ultimoNodo;
-    bool salir1 = true;
-    while(salir1){
-        Pila<string>* pilaDeLectura = lector.get_pila();
-        bool salir = true;
-        while (salir) {
-                pilaDeLectura->desapilar();
-                std::cout << pilaDeLectura->tope() << '\n';
-                if(pilaDeLectura->tope().empty()){
-                    std::cout << "Todo bien" << '\n';
-                    //ultimoNodo = pilaDeLectura->tope();
-                    salir=false;
-                }else{
-                }
+    Nodo<string> *ultimoNodo = new Nodo<string>();
+    Nodo<string> *elemento;
+
+    Pila<string>* pilaDeLectura = lector.get_pila();
+    Pila<string>* pilaDeTokens;
+
+
+    while( !(ultimoNodo == pilaDeLectura->getElemento()) ){
+        *pilaDeTokens = *pilaDeLectura;  //Reseteo de la pila de Tokens
+        cout << "Ultimo nodo registrado: " << ultimoNodo->get_dato() << "   -   " << "Ultimo nodo en la pila: " << lector.get_pila()->getElemento()->get_dato() << endl;
+
+        while( !pilaDeTokens->pilavacia() ){
+            elemento = pilaDeTokens->getElemento();
+            //std::cout << "Nodo actual: '" << elemento->get_dato()  << "'  - Siguiente nodo: "<< elemento->get_next()->get_dato()<< '\n';
+            if( elemento->get_next()->get_dato().empty()  || elemento->get_next()==ultimoNodo ){
+                ultimoNodo = elemento;
+
+                //TODO Crear objeto token correspondiente.
+                //TODO Diferenciar si el token cerro, para poder definir si lleva mas tokens adentro
+
+                cout << "Voy a salir: "<< ultimoNodo->get_dato() << endl;
+                break;
+            }
+            pilaDeTokens->desapilar();
         }
-        salir1=false;
+        pilaDeTokens = lector.get_pila();
     }
 
     // TK_td<string> *td = new TK_td<string>("<td>");
