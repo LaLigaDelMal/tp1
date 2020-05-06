@@ -1,3 +1,0 @@
-"C:\Users\usuario\AppData\Local\JetBrains\CLion 2020.1.1\bin\cmake\win\bin\cmake.exe" -E remove -f CMakeFiles\AyED_Programa.dir/objects.a
-C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\ar.exe cr CMakeFiles\AyED_Programa.dir/objects.a @CMakeFiles\AyED_Programa.dir\objects1.rsp
-C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE -g   -Wl,--whole-archive CMakeFiles\AyED_Programa.dir/objects.a -Wl,--no-whole-archive  -o AyED_Programa.exe -Wl,--out-implib,libAyED_Programa.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\AyED_Programa.dir\linklibs.rsp

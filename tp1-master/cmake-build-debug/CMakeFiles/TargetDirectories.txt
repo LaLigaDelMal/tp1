@@ -1,3 +1,0 @@
-C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/cmake-build-debug/CMakeFiles/AyED_Programa.dir
-C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/usuario/Documents/1- algoritmos/2020/PRIMER PARCIAL/tp1-master/cmake-build-debug/CMakeFiles/rebuild_cache.dir
