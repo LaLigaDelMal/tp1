@@ -4,6 +4,7 @@
 #include <fstream>
 #include <algorithm>
 
+
 using namespace std;
 
 
@@ -117,11 +118,11 @@ bool Lista<T>::es_vacia()
 template <class T>
 T Lista<T>::cabeza()
 {
-    if (es_vacia()) {
-        cout << " Error, Cabeza de lista vacia";
-        return NULL;
+    if (!es_vacia()) {
+        return czo->get_dato();
     }
-    return czo->get_dato();
+    cout << " Error, Cabeza de lista vacia";
+    return NULL;
 }
 
 template <class T>
@@ -166,9 +167,10 @@ T Pila<T>::tope()
 }
 
 template <class T>
-void Pila<T>::desapilar()
-{
-    this->borrar();
+void Pila<T>::desapilar(){
+    if(!pilavacia()){
+        this->borrar();
+    }
 }
 
 template <class T>
@@ -231,8 +233,8 @@ Pila<string>* LectorDeHtml::get_pila() {
 
 void LectorDeHtml::cargarEnPila() {
 
-   // Descomentar la siguiente linea para ver como trabaja la recursion
-   // cout << textoDelArchivo << endl;
+    // Descomentar la siguiente linea para ver como trabaja la recursion
+    // cout << textoDelArchivo << endl;
 
 
     try {      // El metodo erase de la clase string arroja una excepcion que no afecta la modificacion de la cadena pero detiene la ejecucion si no se maneja.
@@ -302,6 +304,7 @@ void LectorDeHtml::leerTexto() {
 
 class TagHtml{
 public:
+    ~TagHtml(){};
     bool tagMostrado;        // Se usa para detectar si el tipo de tag ya ha sido impreso
     string textoDelTag;
     Pila<TagHtml*> *tagsAnidados = new Pila<TagHtml*>();
@@ -316,12 +319,13 @@ public:
 class text : public TagHtml{
 public:
     text(string texto){textoDelTag = texto;}
+    ~text(){delete tagsAnidados;}
     void show() override;
 };
 
 void text::show() {
 
-   if(!textoDelTag.empty()){ cout << "text  " << textoDelTag << endl;}
+    if(!textoDelTag.empty()){ cout << "text\t" << textoDelTag << endl;}
 }
 
 
@@ -331,14 +335,41 @@ void text::show() {
 class h1 : public TagHtml{
 public:
     h1(string texto){textoDelTag = texto;}
+    ~h1(){delete tagsAnidados;}
     void show() override;
 };
 
 void h1::show() {
-
-    if(!textoDelTag.empty()) cout << "h1  " << textoDelTag << endl;
+    if(!textoDelTag.empty()) cout << "h1\t"<< textoDelTag << endl;
 }
 
+//-------------------------------------------------------------------------------------------
+//h2           Clase del tag <h2>
+
+class h2 : public h1{
+public:
+    h2(string texto):h1(textoDelTag){}
+    ~h2(){delete tagsAnidados;}
+    void show() override;
+};
+
+void h2::show() {
+    if(!textoDelTag.empty()) cout << "h2\t"<< textoDelTag << endl;
+}
+
+//-------------------------------------------------------------------------------------------
+//title           Clase del tag <title>
+
+class title : public TagHtml{
+public:
+    title(string texto){textoDelTag = texto;}
+    ~title(){delete tagsAnidados;}
+    void show() override;
+};
+
+void title::show() {
+    if(!textoDelTag.empty()) cout << "title\t"<< textoDelTag << endl;
+}
 
 //-------------------------------------------------------------------------------------------
 //table           Clase del tag <table>
@@ -346,6 +377,7 @@ void h1::show() {
 class table : public TagHtml{
 public:
     table(){};
+    ~table(){delete tagsAnidados;}
     void show() override;
 };
 
@@ -356,13 +388,13 @@ void table::show() {
         tagMostrado = true;
     }
 
-   //// funcion recursiva que llama a los metodos show de los tags <tr> en la pila de table
-   if(!this->tagsAnidados->pilavacia()){
+    //// funcion recursiva que llama a los metodos show de los tags <tr> en la pila de table
+    if(!this->tagsAnidados->pilavacia()){
 
-       tagsAnidados->tope()->show();
-       tagsAnidados->desapilar();
-       this->show();
-   }
+        tagsAnidados->tope()->show();
+        tagsAnidados->desapilar();
+        this->show();
+    }
 }
 
 
@@ -372,17 +404,18 @@ void table::show() {
 class tr : public TagHtml{
 public:
     tr(){};
+    ~tr(){delete tagsAnidados;}
     void show() override;
 };
 
 void tr::show() {
 
     if(!tagMostrado){
-        cout << "    tr" << endl;
+        cout << "\ttr" << endl;
         tagMostrado = true;
     }
 
-    //// funcion recursiva que llama a los metodos show de los tags <th> o <td> en la lista de tr
+    // funcion recursiva que llama a los metodos show de los tags <th> o <td> en la lista de tr
     if(!tagsAnidados->pilavacia()){
 
         tagsAnidados->tope()->show();
@@ -398,6 +431,7 @@ void tr::show() {
 class th : public TagHtml{
 public:
     th(string texto){textoDelTag = texto;}
+    ~th(){delete tagsAnidados;}
     void show() override;
 };
 
@@ -405,7 +439,7 @@ void th::show() {
 
     if(!textoDelTag.empty()){
 
-        cout << "      th " << textoDelTag << endl;
+        cout << "\t\tth  " << textoDelTag << endl;
     }
 }
 
@@ -416,14 +450,15 @@ void th::show() {
 class td : public TagHtml{
 public:
     td(string texto){textoDelTag = texto;}
+    ~td(){delete tagsAnidados;}
     void show() override;
 };
 
-void td::show() {
+void td::show(){
 
     if(!textoDelTag.empty()) {
 
-        cout << "      td " << textoDelTag << endl;
+        cout << "\t\ttd  " << textoDelTag << endl;
     }
 }
 
@@ -431,99 +466,134 @@ void td::show() {
 
 
 //-------------------------------------------------------------------------------------------
-//Main
+//Funciones
 
-    int main() {
+void parsing(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pilaDeTags){
+    if(!pilaDeTokens->es_vacia()) {
+        std::cout << pilaDeTokens->tope() << '\n';
+        if(pilaDeTokens->tope().at(0) == '<' && pilaDeTokens->tope().at(1) == '/'){       //Detectar tag que cierra
 
-        cout << '\n' << "------------------  Parte 1: Tokenize  ------------------" << endl;
-        cout << "Ingrese el nombre del archivo: ";
-        string nombre;
-        cin  >> nombre;
-
-        LectorDeHtml lector;
-        lector.set_archivo(nombre);
-
-        Pila<string>* pilaDeTokens = lector.get_pila();
-
-
-        cout << '\n' << "------------------  Parte 2: Parsing  ------------------" << endl;
-
-
-     Pila<TagHtml*>* pilaDeTags = new Pila<TagHtml*>;  // Puntero a una pila de punteros a objetos TagHtml (Polimorfismo)
-
-
-        while(!pilaDeTokens->es_vacia()) {
-
-            if(pilaDeTokens->tope() == "</text>"){
-
+            //Clasificar de que tipo de tag se trata:
+            if( pilaDeTokens->tope()=="</table>" ){
+                std::cout << "Se detecto un tabla" << '\n';
                 pilaDeTokens->desapilar();
-                pilaDeTags->apilar(new text(pilaDeTokens->tope()));
+                pilaDeTags->apilar( new table() );
+
+                parsing(pilaDeTokens, pilaDeTags);
+            }
+            if(pilaDeTokens->tope()=="</tr>"){
+                std::cout << "Se detecto un tr" << '\n';
+                pilaDeTokens->desapilar();
+                pilaDeTags->tope()->tagsAnidados->apilar(new tr());
+
+                parsing(pilaDeTokens, pilaDeTags);
+            }
+            if(pilaDeTokens->tope()=="</td>"){
+                std::cout << "Se detecto un td" << '\n';
+                pilaDeTokens->desapilar();
+                pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new td( pilaDeTokens->tope() ));
+                pilaDeTokens->desapilar();      //Se desapila el texto
+
+                parsing(pilaDeTokens, pilaDeTags);
             }
 
-            if(pilaDeTokens->tope() == "</h1>"){
-
+            if(pilaDeTokens->tope()=="</th>"){
+                std::cout << "Se detecto un th" << '\n';
                 pilaDeTokens->desapilar();
-                pilaDeTags->apilar(new h1(pilaDeTokens->tope()));
+                pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new th( pilaDeTokens->tope() ));
+                pilaDeTokens->desapilar();      //Se desapila el texto
+
+                parsing(pilaDeTokens, pilaDeTags);
             }
-
-            if(pilaDeTokens->tope() == "</table>"){
-
-                pilaDeTags->apilar(new table());
+            if( pilaDeTokens->tope()=="</text>" ){
+                std::cout << "Se detecto un text" << '\n';
+                pilaDeTokens->desapilar();
+                pilaDeTags->apilar( new text(pilaDeTokens->tope()) );
                 pilaDeTokens->desapilar();
 
-                while(pilaDeTokens->tope() != "<table>"){    // Se recorre la pila de Tokens hasta que se termina el alcance de la tabla
-
-                    if(pilaDeTokens->tope() == "</tr>") {
-
-                        pilaDeTokens->desapilar();
-                        pilaDeTags->tope()->tagsAnidados->apilar(new tr());
-
-                        while (pilaDeTokens->tope() != "<tr>"){       // Se recorre la fila de la tabla hasta que se termine el alcance de la tabla
-
-                            if(pilaDeTokens->tope() == "</td>"){
-
-                                // Desapilamos el token que contiene el texto "</td>"
-                                pilaDeTokens->desapilar();
-                                /* Primero se accede a la pila de la tabla (esta en el tope de la pilaDeTags),
-                                 * en esta pila se guardan los objetos tr, y luego se accede a la pila de tagsAnidados del objeto tr
-                                 * y ahi se agrega un objeto td en este caso con su texto correspondiente
-                                 * que seria el siguiente nodo de la pilaDeTokens */
-                                pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new td(pilaDeTokens->tope()));
-
-                            }else if(pilaDeTokens->tope() == "</th>"){
-
-                                pilaDeTokens->desapilar();
-                                pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new th(pilaDeTokens->tope()));
-
-                            } else{
-                                pilaDeTokens->desapilar();
-                            }
-                        }
-
-                    }else{
-                        pilaDeTokens->desapilar();
-                    }
-                }
-
+                parsing(pilaDeTokens, pilaDeTags);
             }
-
-            else{
+            if( pilaDeTokens->tope()=="</h1>" ){
+                std::cout << "Se detecto un h1" << '\n';
                 pilaDeTokens->desapilar();
+                std::cout << pilaDeTokens->tope() << '\n';
+                pilaDeTags->apilar( new h1(pilaDeTokens->tope()) );
+                pilaDeTokens->desapilar();
+
+                parsing(pilaDeTokens, pilaDeTags);
             }
+            if( pilaDeTokens->tope()=="</title>" ){
+                std::cout << "Se detecto un title" << '\n';
+                pilaDeTokens->desapilar();
+                pilaDeTags->apilar( new title(pilaDeTokens->tope()) );
+                pilaDeTokens->desapilar();
+
+                parsing(pilaDeTokens, pilaDeTags);
+            }
+        }else{
+            if( pilaDeTokens->tope().at(0)!='\n' && pilaDeTokens->tope().at(0)!='\r' ){
+                std::cout << "Token no identificado: " <<  pilaDeTokens->tope() << '\n';
+            }
+            pilaDeTokens->desapilar();
+            parsing(pilaDeTokens, pilaDeTags);
 
         }
-
-
-
-        cout << '\n' << "------------------  Parte 3: Show  ---------------------" << endl;
-
-
-        while (!pilaDeTags->es_vacia()){
-
-            pilaDeTags->tope()->show();
-            pilaDeTags->desapilar();
-        }
-
-        return 0;
+    }
 }
 
+string barra(){
+    string barra="---------------------------------------------------------";
+    return barra;
+};
+
+void wAnC(){
+    cout << '\n'; system("pause");
+#ifdef _WIN32
+    system("cls");
+#endif
+#ifdef linux
+    system("clear");
+#endif
+};
+
+//-------------------------------------------------------------------------------------------
+//Main
+
+int main() {
+    cout << barra() << '\n' << "------------------  Parte 1: Tokenize  ------------------" << '\n' << barra() << endl;
+    cout << "Ingrese el nombre del archivo: ";
+    string nombre;
+    cin  >> nombre;
+
+    LectorDeHtml lector;
+    lector.set_archivo(nombre);
+
+    std::cout << "Archivo elegido: " << nombre << '\n';
+
+    Pila<string>* pilaDeTokens = lector.get_pila();
+
+    wAnC();
+
+    cout << barra() << '\n' << "------------------  Parte 2: Parsing  -------------------" << '\n' << barra() << endl;
+
+
+    Pila<TagHtml*>* pilaDeTags = new Pila<TagHtml*>;  // Puntero a una pila de punteros a objetos TagHtml (Polimorfismo)
+
+    try{
+        parsing(pilaDeTokens, pilaDeTags);
+    }catch(...){}
+
+    wAnC();
+
+    cout << barra() << '\n' << "------------------  Parte 3: Show  ---------------------" << '\n' << barra() << endl;
+
+
+     while (!pilaDeTags->es_vacia()){
+
+         pilaDeTags->tope()->show();
+         pilaDeTags->desapilar();
+     }
+
+    wAnC();
+    return 0;
+}
