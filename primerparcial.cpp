@@ -121,7 +121,7 @@ T Lista<T>::cabeza()
     if (!es_vacia()) {
         return czo->get_dato();
     }
-    cout << " Error, Cabeza de lista vacia";
+
     return NULL;
 }
 
@@ -532,7 +532,7 @@ void parsing(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pilaDeTags){
             }
         }else{
             if( pilaDeTokens->tope().at(0)!='\n' && pilaDeTokens->tope().at(0)!='\r' ){
-                std::cout << "Token no identificado: " <<  pilaDeTokens->tope() << '\n';
+    
             }
             pilaDeTokens->desapilar();
             parsing(pilaDeTokens, pilaDeTags);
