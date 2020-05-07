@@ -76,10 +76,8 @@ bool Nodo<T>::es_vacio()
 
 template <class T> class Lista
 {
-private:
-    Nodo<T>* czo;
-
 public:
+    Nodo<T>* czo;
     Lista();
     Lista(Nodo<T>* n);
 
@@ -144,6 +142,7 @@ public:
     Pila();
     void apilar(T d);
     T tope();
+    Nodo<T>* nodoTope();
     void desapilar();
     bool pilavacia();
 };
@@ -164,6 +163,12 @@ template <class T>
 T Pila<T>::tope()
 {
         return this->cabeza();
+}
+
+template <class T>
+Nodo<T>* Pila<T>::nodoTope()
+{
+        return this->czo;
 }
 
 template <class T>
@@ -305,10 +310,16 @@ void LectorDeHtml::leerTexto() {
 class TagHtml{
 public:
     bool tagMostrado;        // Se usa para detectar si el tipo de tag ya ha sido impreso
+    bool estado;  //1 = abierto , 0=cerrado
     string textoDelTag;
     Pila<TagHtml*> *tagsAnidados = new Pila<TagHtml*>();
 
+    TagHtml(){estado = 1;};     // Funcion virtual pura
     virtual void show() = 0;     // Funcion virtual pura
+    bool estaAbierto(){return estado;};
+    void cerrar(){estado = 0;};
+    void setTexto(string texto){textoDelTag = texto;};
+    //Pila<TagHtml*> getAnidados(){return tagsAnidados;};
 };
 
 
@@ -317,7 +328,7 @@ public:
 
 class text : public TagHtml{
 public:
-    text(string texto){textoDelTag = texto;}
+    text(){};
     void show() override;
 };
 
@@ -326,13 +337,25 @@ void text::show() {
    if(!textoDelTag.empty()){ cout << "text\t" << textoDelTag << endl;}
 }
 
+//-------------------------------------------------------------------------------------------
+//h1           Clase del tag <h1>
+
+class Html : public TagHtml{
+public:
+    Html(){};
+    void show() override;
+};
+
+void Html::show() {
+    std::cout << "asd" << '\n';;
+}
 
 //-------------------------------------------------------------------------------------------
 //h1           Clase del tag <h1>
 
 class h1 : public TagHtml{
 public:
-    h1(string texto){textoDelTag = texto;}
+    h1(){};
     void show() override;
 };
 
@@ -345,7 +368,7 @@ void h1::show() {
 
 class h2 : public h1{
 public:
-    h2(string texto):h1(textoDelTag){}
+    h2(){};
     void show() override;
 };
 
@@ -358,7 +381,7 @@ void h2::show() {
 
 class title : public TagHtml{
 public:
-    title(string texto){textoDelTag = texto;}
+    title(){};
     void show() override;
 };
 
@@ -423,7 +446,7 @@ void tr::show() {
 
 class th : public TagHtml{
 public:
-    th(string texto){textoDelTag = texto;}
+    th(){};
     void show() override;
 };
 
@@ -441,7 +464,7 @@ void th::show() {
 
 class td : public TagHtml{
 public:
-    td(string texto){textoDelTag = texto;}
+    td(){}
     void show() override;
 };
 
@@ -458,78 +481,76 @@ void td::show(){
 
 //-------------------------------------------------------------------------------------------
 //Funciones
+void crearTag(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pila, TagHtml *ultimoTagAbierto ){
+    //Clasificar de que tipo de tag se trata
+    //Crearlo
+    //Apilarlo en la pila indicada
+    //Dejarlo registrado como ultimo tag abierto
 
-void parsing(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pilaDeTags){
+    if( pilaDeTokens->tope()=="</html>" ){
+        std::cout << "Se detecto un html" << '\n';
+        pila->apilar( new Html() );
+    }
+    if( pilaDeTokens->tope()=="</text>" ){
+        std::cout << "Se detecto un text" << '\n';
+        pila->apilar( new text() );
+    }
+    if( pilaDeTokens->tope()=="</h2>" ){
+        std::cout << "Se detecto un h2" << '\n';
+        pila->apilar( new h1() );
+    }
+    if( pilaDeTokens->tope()=="</title>" ){
+        std::cout << "Se detecto un h1" << '\n';
+        pila->apilar( new title() );
+    }
+    if( pilaDeTokens->tope()=="</title>" ){
+        std::cout << "Se detecto un title" << '\n';
+        pila->apilar( new title() );
+    }
+    if( pilaDeTokens->tope()=="</table>" ){
+        std::cout << "Se detecto un table" << '\n';
+        pila->apilar( new table() );
+    }
+    if( pilaDeTokens->tope()=="</tr>" ){
+        std::cout << "Se detecto un tr" << '\n';
+        pila->apilar( new tr() );
+    }
+    if( pilaDeTokens->tope()=="</th>" ){
+        std::cout << "Se detecto un th" << '\n';
+        pila->apilar( new th() );
+    }
+    if( pilaDeTokens->tope()=="</td>" ){
+        std::cout << "Se detecto un td" << '\n';
+        pila->apilar( new td() );
+    }
+
+    ultimoTagAbierto = pila->tope();
+};
+
+void parsing(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pilaDeTags , Pila<TagHtml*> *anidacion, TagHtml *ultimoTagAbierto = new th()){
     if(!pilaDeTokens->es_vacia()) {
-        std::cout << pilaDeTokens->tope() << '\n';
-        if(pilaDeTokens->tope().at(0) == '<' && pilaDeTokens->tope().at(1) == '/'){       //Detectar tag que cierra
+        if(pilaDeTokens->tope().at(0) == '<' && pilaDeTokens->tope().at(pilaDeTokens->tope().length()) == '>'){       //Detectar token
+            std::cout << "Detecte un tag" << '\n';
+            if(pilaDeTokens->tope().at(1) == '/'){    //Ver si cierra
 
-            //Clasificar de que tipo de tag se trata:
-            if( pilaDeTokens->tope()=="</table>" ){
-                std::cout << "Se detecto un tabla" << '\n';
-                pilaDeTokens->desapilar();
-                pilaDeTags->apilar( new table() );
-
-                parsing(pilaDeTokens, pilaDeTags);
+                if( pilaDeTags->pilavacia() || !pilaDeTags->tope()->estaAbierto() ){
+                    crearTag(pilaDeTokens,pilaDeTags,ultimoTagAbierto);
+                }else{
+                    anidacion = pilaDeTags->tope()->tagsAnidados;
+                    while(!anidacion->pilavacia()){
+                        anidacion = anidacion->tope()->tagsAnidados;
+                    }
+                    crearTag(pilaDeTokens,anidacion,ultimoTagAbierto);
+                }
+            }else{     //Si no cierra es porque abre
+                ultimoTagAbierto->cerrar();
             }
-            if(pilaDeTokens->tope()=="</tr>"){
-                std::cout << "Se detecto un tr" << '\n';
-                pilaDeTokens->desapilar();
-                pilaDeTags->tope()->tagsAnidados->apilar(new tr());
-
-                parsing(pilaDeTokens, pilaDeTags);
-            }
-            if(pilaDeTokens->tope()=="</td>"){
-                std::cout << "Se detecto un td" << '\n';
-                pilaDeTokens->desapilar();
-                pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new td( pilaDeTokens->tope() ));
-                pilaDeTokens->desapilar();      //Se desapila el texto
-
-                parsing(pilaDeTokens, pilaDeTags);
-            }
-
-            if(pilaDeTokens->tope()=="</th>"){
-                std::cout << "Se detecto un th" << '\n';
-                pilaDeTokens->desapilar();
-                pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new th( pilaDeTokens->tope() ));
-                pilaDeTokens->desapilar();      //Se desapila el texto
-
-                parsing(pilaDeTokens, pilaDeTags);
-            }
-            if( pilaDeTokens->tope()=="</text>" ){
-                std::cout << "Se detecto un text" << '\n';
-                pilaDeTokens->desapilar();
-                pilaDeTags->apilar( new text(pilaDeTokens->tope()) );
-                pilaDeTokens->desapilar();
-
-                parsing(pilaDeTokens, pilaDeTags);
-            }
-            if( pilaDeTokens->tope()=="</h1>" ){
-                std::cout << "Se detecto un h1" << '\n';
-                pilaDeTokens->desapilar();
-                std::cout << pilaDeTokens->tope() << '\n';
-                pilaDeTags->apilar( new h1(pilaDeTokens->tope()) );
-                pilaDeTokens->desapilar();
-
-                parsing(pilaDeTokens, pilaDeTags);
-            }
-            if( pilaDeTokens->tope()=="</title>" ){
-                std::cout << "Se detecto un title" << '\n';
-                pilaDeTokens->desapilar();
-                pilaDeTags->apilar( new title(pilaDeTokens->tope()) );
-                pilaDeTokens->desapilar();
-
-                parsing(pilaDeTokens, pilaDeTags);
-            }
-        }else{
-            if( pilaDeTokens->tope().at(0)!='\n' && pilaDeTokens->tope().at(0)!='\r' ){
-                std::cout << "Token no identificado: " <<  pilaDeTokens->tope() << '\n';
-            }
-            pilaDeTokens->desapilar();
-            parsing(pilaDeTokens, pilaDeTags);
-
+        }else{ //Si no es token es texto
+            ultimoTagAbierto->setTexto(pilaDeTokens->tope());
         }
     }
+    pilaDeTokens->desapilar();
+    parsing(pilaDeTokens, pilaDeTags,anidacion, ultimoTagAbierto);
 }
 
 string barra(){
@@ -567,11 +588,11 @@ int main() {
 
     cout << barra() << '\n' << "------------------  Parte 2: Parsing  -------------------" << '\n' << barra() << endl;
 
-    Pila<string>* pilaDeTokensOrdenada = new Pila<string>;
     Pila<TagHtml*>* pilaDeTags = new Pila<TagHtml*>;  // Puntero a una pila de punteros a objetos TagHtml (Polimorfismo)
-
+    Pila<TagHtml*>* anidacion = new Pila<TagHtml*>;
+    //TagHtml *anidacion = new TagHtml;
      try{
-         parsing(pilaDeTokens, pilaDeTags);
+        parsing(pilaDeTokens, pilaDeTags, anidacion);
      }catch(...){}
 
     wAnC();
@@ -579,11 +600,10 @@ int main() {
     cout << barra() << '\n' << "------------------  Parte 3: Show  ---------------------" << '\n' << barra() << endl;
 
 
-    // while (!pilaDeTags->es_vacia()){
-    //
-    //     pilaDeTags->tope()->show();
-    //     pilaDeTags->desapilar();
-    // }
+    while (!pilaDeTags->es_vacia()){
+        pilaDeTags->tope()->show();
+        pilaDeTags->desapilar();
+    }
 
     wAnC();
     return 0;
