@@ -9,7 +9,7 @@ using namespace std;
 
 
 //-------------------------------------------------------------------------------------------
-//Nodo
+// NODO
 
 template <class T> class Nodo
 {
@@ -28,105 +28,78 @@ public:
     bool es_vacio();
 };
 
-template <class T>
-Nodo<T>::Nodo()
-{
+template <class T> Nodo<T>::Nodo(){
     next = NULL;
 }
 
-template <class T>
-Nodo<T>::Nodo(T a)
-{
+template <class T> Nodo<T>::Nodo(T a){
     dato = a;
     next = NULL;
 }
 
-template <class T>
-void Nodo<T>::set_dato(T a)
-{
+template <class T> void Nodo<T>::set_dato(T a){
     dato = a;
 }
 
-template <class T>
-void Nodo<T>::set_next(Nodo* n)
-{
+template <class T> void Nodo<T>::set_next(Nodo* n){
     next = n;
 }
 
-template <class T>
-T Nodo<T>::get_dato()
-{
+template <class T> T Nodo<T>::get_dato(){
     return dato;
 }
 
-template <class T>
-Nodo<T>* Nodo<T>::get_next()
-{
+template <class T> Nodo<T>* Nodo<T>::get_next(){
     return next;
 }
 
-template <class T>
-bool Nodo<T>::es_vacio()
-{
+template <class T> bool Nodo<T>::es_vacio(){
     return next == NULL;
 }
 
 //-------------------------------------------------------------------------------------------
-//Lista
+//  LISTA
 
-template <class T> class Lista
-{
+template <class T> class Lista{
 private:
     Nodo<T>* czo;
 
 public:
     Lista();
     Lista(Nodo<T>* n);
-
     void add(T d);
     bool es_vacia();
     T cabeza();
     void borrar();     // Borra el Nodo cabeza
 };
 
-template <class T>
-Lista<T>::Lista()
-{
+template <class T> Lista<T>::Lista(){
     czo = new Nodo<T>();
 }
 
-template <class T>
-Lista<T>::Lista(Nodo<T>* n)
-{
+template <class T> Lista<T>::Lista(Nodo<T>* n){
     czo = n;
 }
 
-template <class T>
-void Lista<T>::add(T d)
-{
+template <class T> void Lista<T>::add(T d){
     Nodo<T>* nuevo = new Nodo<T>(d);
     nuevo->set_next(czo);
     czo = nuevo;
 }
 
-template <class T>
-bool Lista<T>::es_vacia()
-{
+template <class T> bool Lista<T>::es_vacia(){
     return czo->es_vacio();
 }
 
-template <class T>
-T Lista<T>::cabeza()
-{
-    if (!es_vacia()) {
-        return czo->get_dato();
+template <class T> T Lista<T>::cabeza(){
+    if (es_vacia()) {
+        cout << " Error, Cabeza de lista vacia";
+        return NULL;
     }
-
-    return NULL;
+    return czo->get_dato();
 }
 
-template <class T>
-void Lista<T>::borrar() {
+template <class T> void Lista<T>::borrar() {
     if (!this->es_vacia()) {
         Nodo<T> *tmp = czo;
         czo = czo->get_next();
@@ -136,10 +109,9 @@ void Lista<T>::borrar() {
 
 
 //-------------------------------------------------------------------------------------------
-//Pila
+//PILA
 
-template <class T> class Pila:public Lista<T>        // Hereda los miembros publicos de la clase Lista
-{
+template <class T> class Pila:public Lista<T> {        // Hereda los miembros publicos de la clase Lista
 public:
     Pila();
     void apilar(T d);
@@ -148,34 +120,23 @@ public:
     bool pilavacia();
 };
 
-template <typename T>
-Pila<T>::Pila()
-{
-    Lista<T>();        // Llama al constructor por defecto de la clase Lista
+template <typename T> Pila<T>::Pila(){
+    Lista<T>();                                    // Llama al constructor por defecto de la clase Lista
 }
 
-template <class T>
-void Pila<T>::apilar(T d)
-{
+template <class T> void Pila<T>::apilar(T d){
     this->add(d);
 }
 
-template <class T>
-T Pila<T>::tope()
-{
+template <class T> T Pila<T>::tope(){
     return this->cabeza();
 }
 
-template <class T>
-void Pila<T>::desapilar(){
-    if(!pilavacia()){
-        this->borrar();
-    }
+template <class T> void Pila<T>::desapilar(){
+    this->borrar();
 }
 
-template <class T>
-bool Pila<T>::pilavacia()
-{
+template <class T> bool Pila<T>::pilavacia(){
     return this->es_vacia();
 }
 
