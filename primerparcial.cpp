@@ -4,6 +4,7 @@
 #include <fstream>
 #include <algorithm>
 
+
 using namespace std;
 string buffer;        // Variable global buffer
 
@@ -236,7 +237,6 @@ public:
 };
 
 void h1::show() {
-
     if(!textoDelTag.empty()) cout << textoDelTag << endl;
 }
 
@@ -318,7 +318,7 @@ public:
     void show() override;
 };
 
-void td::show() {
+void td::show(){
 
     if(!textoDelTag.empty()) {
 
@@ -332,79 +332,74 @@ void td::show() {
 
 //-------------------------------------------------------------------------------------------
 //Main
+
+void funcioncita(Pila<string> *pilaDeTokens, Pila<TokenHtml*> *pilaDeTags){
+    if(!pilaDeTokens->es_vacia()) {
+        std::cout << "Me llamaron" << '\n';
+        if(pilaDeTokens->tope().at(0) == '<' && pilaDeTokens->tope().at(1) == '/'){       //Detectar tag que cierra
+            std::cout << "Detectado tag que cierra: " << pilaDeTokens->tope()  << '\n';
+
+            //Clasificar de que tipo de tag se trata:
+                if( pilaDeTokens->tope()=="</table>" ){
+                    std::cout << "Detecte una tabla" << '\n';
+                    pilaDeTokens->desapilar();
+                    pilaDeTags->apilar( new table() );
+
+                    funcioncita(pilaDeTokens, pilaDeTags);
+
+                }
+                if(pilaDeTokens->tope()=="</tr>"){
+                    std::cout << "Detecte una tr" << '\n';
+                    pilaDeTokens->desapilar();
+                    pilaDeTags->tope()->tagsAnidados->apilar(new tr());
+
+                    funcioncita(pilaDeTokens, pilaDeTags);
+
+                }
+                if(pilaDeTokens->tope()=="</td>"){
+                    std::cout << "Detecte una td" << '\n';
+                    pilaDeTokens->desapilar();
+                    //Se comproba si es texto
+                    pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new td( pilaDeTokens->tope() ));
+                    pilaDeTokens->desapilar();      //Se desapila el texto
+
+                    funcioncita(pilaDeTokens, pilaDeTags);
+                }
+
+        }else{
+            std::cout << "Token no identificado: " <<  pilaDeTokens->tope() << '\n';
+            pilaDeTokens->desapilar();
+            funcioncita(pilaDeTokens, pilaDeTags);
+        }
+}
+}
 string barra(){
     string barra="---------------------------------------------------------";
     return barra;
 };
 int main() {
-
     cout << barra() << '\n' << "------------------  Parte 1: Tokenize  ------------------" << '\n' << barra() << endl;
     cout << "Ingrese el nombre del archivo: ";
     string nombre;
-    cin  >> nombre;
-
+    //cin  >> nombre;
+    nombre = "archivito.html";
 
     LectorDeHtml lector;
     lector.set_archivo(nombre);
 
+    std::cout << "Archivo elegido: " << nombre << '\n';
+
     Pila<string>* pilaDeTokens = lector.get_pila();
 
-    //cout << "Presione Enter para continuar"; cin.ignore();
-    
+    //cout << "Presione Enter para continuar..."; cin.ignore();
+
     cout << barra() << '\n' << "------------------  Parte 2: Parsing  -------------------" << '\n' << barra() << endl;
 
 
     Pila<TokenHtml*>* pilaDeTags = new Pila<TokenHtml*>;  // Puntero a una pila de punteros a objetos TokenHtml (Polimorfismo)
 
 
-    while(!pilaDeTokens->es_vacia()) {
-        if(pilaDeTokens->tope() == "</text>"){
-            pilaDeTokens->desapilar();
-            pilaDeTags->apilar(new text(pilaDeTokens->tope()));
-        }
-
-        if(pilaDeTokens->tope() == "</h1>"){
-            pilaDeTokens->desapilar();
-            pilaDeTags->apilar(new h1(pilaDeTokens->tope()));
-        }
-
-        if(pilaDeTokens->tope() == "</table>"){
-            pilaDeTags->apilar(new table());
-            pilaDeTokens->desapilar();
-
-            while(pilaDeTokens->tope() != "<table>"){    // Se recorre la pila de Tokens hasta que se termina el alcance de la tabla
-                if(pilaDeTokens->tope() == "</tr>") {
-                    pilaDeTokens->desapilar();
-                    pilaDeTags->tope()->tagsAnidados->apilar(new tr());
-
-                    while (pilaDeTokens->tope() != "<tr>"){       // Se recorre la fila de la tabla hasta que se termine el alcance de la tabla
-
-                        if(pilaDeTokens->tope() == "</td>"){
-                            // Desapilamos el token que contiene el texto "</td>"
-                            pilaDeTokens->desapilar();
-                            /* Primero se accede a la pila de la tabla (esta en el tope de la pilaDeTags),
-                            * en esta pila se guardan los objetos tr, y luego se accede a la pila de tagsAnidados del objeto tr
-                            * y ahi se agrega un objeto td en este caso con su texto correspondiente
-                            * que seria el siguiente nodo de la pilaDeTokens */
-
-                            pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new td(pilaDeTokens->tope()));
-                        }else if(pilaDeTokens->tope() == "</th>"){
-                            pilaDeTokens->desapilar();
-                            pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new th(pilaDeTokens->tope()));
-                        } else{
-                            pilaDeTokens->desapilar();
-                        }
-                    }
-                }else{
-                    pilaDeTokens->desapilar();
-                }
-            }
-        }else{
-            pilaDeTokens->desapilar();
-        }
-    }
-
-
+    funcioncita(pilaDeTokens, pilaDeTags);
 
     cout << barra() << '\n' << "--------------------  Parte 3: Show  --------------------" << '\n' << barra() << endl;
 
