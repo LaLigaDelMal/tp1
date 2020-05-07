@@ -478,23 +478,17 @@ void parsing(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pilaDeTags){
                 std::cout << "Se detecto un tabla" << '\n';
                 pilaDeTokens->desapilar();
                 pilaDeTags->apilar( new table() );
-
-                parsing(pilaDeTokens, pilaDeTags);
             }
             if(pilaDeTokens->tope()=="</tr>"){
                 std::cout << "Se detecto un tr" << '\n';
                 pilaDeTokens->desapilar();
                 pilaDeTags->tope()->tagsAnidados->apilar(new tr());
-
-                parsing(pilaDeTokens, pilaDeTags);
             }
             if(pilaDeTokens->tope()=="</td>"){
                 std::cout << "Se detecto un td" << '\n';
                 pilaDeTokens->desapilar();
                 pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new td( pilaDeTokens->tope() ));
                 pilaDeTokens->desapilar();      //Se desapila el texto
-
-                parsing(pilaDeTokens, pilaDeTags);
             }
 
             if(pilaDeTokens->tope()=="</th>"){
@@ -502,16 +496,12 @@ void parsing(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pilaDeTags){
                 pilaDeTokens->desapilar();
                 pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new th( pilaDeTokens->tope() ));
                 pilaDeTokens->desapilar();      //Se desapila el texto
-
-                parsing(pilaDeTokens, pilaDeTags);
             }
             if( pilaDeTokens->tope()=="</text>" ){
                 std::cout << "Se detecto un text" << '\n';
                 pilaDeTokens->desapilar();
                 pilaDeTags->apilar( new text(pilaDeTokens->tope()) );
                 pilaDeTokens->desapilar();
-
-                parsing(pilaDeTokens, pilaDeTags);
             }
             if( pilaDeTokens->tope()=="</h1>" ){
                 std::cout << "Se detecto un h1" << '\n';
@@ -519,25 +509,19 @@ void parsing(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pilaDeTags){
                 std::cout << pilaDeTokens->tope() << '\n';
                 pilaDeTags->apilar( new h1(pilaDeTokens->tope()) );
                 pilaDeTokens->desapilar();
-
-                parsing(pilaDeTokens, pilaDeTags);
             }
             if( pilaDeTokens->tope()=="</title>" ){
                 std::cout << "Se detecto un title" << '\n';
                 pilaDeTokens->desapilar();
                 pilaDeTags->apilar( new title(pilaDeTokens->tope()) );
                 pilaDeTokens->desapilar();
-
-                parsing(pilaDeTokens, pilaDeTags);
+            }else{
+                pilaDeTokens->desapilar();
             }
         }else{
-            if( pilaDeTokens->tope().at(0)!='\n' && pilaDeTokens->tope().at(0)!='\r' ){
-    
-            }
             pilaDeTokens->desapilar();
-            parsing(pilaDeTokens, pilaDeTags);
-
         }
+        parsing(pilaDeTokens, pilaDeTags);
     }
 }
 
@@ -560,6 +544,12 @@ void wAnC(){
 //Main
 
 int main() {
+    cout << "==============================================================================================" <<'\n'<< endl;
+    std::cout << " Name        : Parcial 1" << '\n';
+    std::cout << " Author      : Castellano Evangelina, Chagay Vera Adriel, Segura Gaspar, Wortley Agustina" << '\n';
+    std::cout << " Version     : 1.1" << '\n';
+    std::cout << " Description : primer parcial de algoritmos y estructuras de datos" << '\n' <<'\n';
+    std::cout << "==============================================================================================" << '\n' << '\n';
     cout << barra() << '\n' << "------------------  Parte 1: Tokenize  ------------------" << '\n' << barra() << endl;
     cout << "Ingrese el nombre del archivo: ";
     string nombre;
