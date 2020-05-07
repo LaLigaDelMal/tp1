@@ -323,7 +323,7 @@ public:
 
 void text::show() {
 
-   if(!textoDelTag.empty()){ cout << "text  " << textoDelTag << endl;}
+   if(!textoDelTag.empty()){ cout << "text\t" << textoDelTag << endl;}
 }
 
 
@@ -337,9 +337,34 @@ public:
 };
 
 void h1::show() {
-    if(!textoDelTag.empty()) cout << "h1     " << endl;
+    if(!textoDelTag.empty()) cout << "h1\t"<< textoDelTag << endl;
 }
 
+//-------------------------------------------------------------------------------------------
+//h2           Clase del tag <h2>
+
+class h2 : public h1{
+public:
+    h2(string texto):h1(textoDelTag){}
+    void show() override;
+};
+
+void h2::show() {
+    if(!textoDelTag.empty()) cout << "h2\t"<< textoDelTag << endl;
+}
+
+//-------------------------------------------------------------------------------------------
+//title           Clase del tag <title>
+
+class title : public TagHtml{
+public:
+    title(string texto){textoDelTag = texto;}
+    void show() override;
+};
+
+void title::show() {
+    if(!textoDelTag.empty()) cout << "title\t"<< textoDelTag << endl;
+}
 
 //-------------------------------------------------------------------------------------------
 //table           Clase del tag <table>
@@ -379,11 +404,11 @@ public:
 void tr::show() {
 
     if(!tagMostrado){
-        cout << "    tr" << endl;
+        cout << "\ttr" << endl;
         tagMostrado = true;
     }
 
-    //// funcion recursiva que llama a los metodos show de los tags <th> o <td> en la lista de tr
+    // funcion recursiva que llama a los metodos show de los tags <th> o <td> en la lista de tr
     if(!tagsAnidados->pilavacia()){
 
         tagsAnidados->tope()->show();
@@ -406,7 +431,7 @@ void th::show() {
 
     if(!textoDelTag.empty()){
 
-        cout << "      th " << textoDelTag << endl;
+        cout << "\t\tth  " << textoDelTag << endl;
     }
 }
 
@@ -424,7 +449,7 @@ void td::show(){
 
     if(!textoDelTag.empty()) {
 
-        cout << "      td " << textoDelTag << endl;
+        cout << "\t\ttd  " << textoDelTag << endl;
     }
 }
 
@@ -436,6 +461,7 @@ void td::show(){
 
 void parsing(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pilaDeTags){
     if(!pilaDeTokens->es_vacia()) {
+        std::cout << pilaDeTokens->tope() << '\n';
         if(pilaDeTokens->tope().at(0) == '<' && pilaDeTokens->tope().at(1) == '/'){       //Detectar tag que cierra
 
             //Clasificar de que tipo de tag se trata:
@@ -463,7 +489,7 @@ void parsing(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pilaDeTags){
             }
 
             if(pilaDeTokens->tope()=="</th>"){
-                std::cout << "Se detecto un td" << '\n';
+                std::cout << "Se detecto un th" << '\n';
                 pilaDeTokens->desapilar();
                 pilaDeTags->tope()->tagsAnidados->tope()->tagsAnidados->apilar(new th( pilaDeTokens->tope() ));
                 pilaDeTokens->desapilar();      //Se desapila el texto
@@ -473,14 +499,35 @@ void parsing(Pila<string> *pilaDeTokens, Pila<TagHtml*> *pilaDeTags){
             if( pilaDeTokens->tope()=="</text>" ){
                 std::cout << "Se detecto un text" << '\n';
                 pilaDeTokens->desapilar();
-                pilaDeTags->apilar( new table() );
+                pilaDeTags->apilar( new text(pilaDeTokens->tope()) );
+                pilaDeTokens->desapilar();
+
+                parsing(pilaDeTokens, pilaDeTags);
+            }
+            if( pilaDeTokens->tope()=="</h1>" ){
+                std::cout << "Se detecto un h1" << '\n';
+                pilaDeTokens->desapilar();
+                std::cout << pilaDeTokens->tope() << '\n';
+                pilaDeTags->apilar( new h1(pilaDeTokens->tope()) );
+                pilaDeTokens->desapilar();
+
+                parsing(pilaDeTokens, pilaDeTags);
+            }
+            if( pilaDeTokens->tope()=="</title>" ){
+                std::cout << "Se detecto un title" << '\n';
+                pilaDeTokens->desapilar();
+                pilaDeTags->apilar( new title(pilaDeTokens->tope()) );
+                pilaDeTokens->desapilar();
 
                 parsing(pilaDeTokens, pilaDeTags);
             }
         }else{
-            std::cout << "Token no identificado: " <<  pilaDeTokens->tope() << '\n';
+            if( pilaDeTokens->tope().at(0)!='\n' && pilaDeTokens->tope().at(0)!='\r' ){
+                std::cout << "Token no identificado: " <<  pilaDeTokens->tope() << '\n';
+            }
             pilaDeTokens->desapilar();
             parsing(pilaDeTokens, pilaDeTags);
+
         }
     }
 }
@@ -490,7 +537,15 @@ string barra(){
     return barra;
 };
 
-void wAnC(){cout << '\n'; system("pause"); system("cls");};
+void wAnC(){
+    cout << '\n'; system("pause");
+    #ifdef _WIN32
+    system("cls");
+    #endif
+    #ifdef linux
+    system("clear");
+    #endif
+};
 
 //-------------------------------------------------------------------------------------------
 //Main
@@ -500,7 +555,6 @@ int main() {
     cout << "Ingrese el nombre del archivo: ";
     string nombre;
     cin  >> nombre;
-    nombre = "archivito.html";
 
     LectorDeHtml lector;
     lector.set_archivo(nombre);
@@ -513,21 +567,23 @@ int main() {
 
     cout << barra() << '\n' << "------------------  Parte 2: Parsing  -------------------" << '\n' << barra() << endl;
 
+    Pila<string>* pilaDeTokensOrdenada = new Pila<string>;
     Pila<TagHtml*>* pilaDeTags = new Pila<TagHtml*>;  // Puntero a una pila de punteros a objetos TagHtml (Polimorfismo)
-    try{
-        parsing(pilaDeTokens, pilaDeTags);
-    }catch(...){}
+
+     try{
+         parsing(pilaDeTokens, pilaDeTags);
+     }catch(...){}
 
     wAnC();
 
     cout << barra() << '\n' << "------------------  Parte 3: Show  ---------------------" << '\n' << barra() << endl;
 
 
-    while (!pilaDeTags->es_vacia()){
-
-        pilaDeTags->tope()->show();
-        pilaDeTags->desapilar();
-    }
+    // while (!pilaDeTags->es_vacia()){
+    //
+    //     pilaDeTags->tope()->show();
+    //     pilaDeTags->desapilar();
+    // }
 
     wAnC();
     return 0;
