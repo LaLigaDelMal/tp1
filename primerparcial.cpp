@@ -534,9 +534,10 @@ int main() {
 
     Pila<TagHtml*>* pilaDeTags = new Pila<TagHtml*>;  // Puntero a una pila de punteros a objetos TagHtml (Polimorfismo)
 
-    try{
+
+
         parsing(pilaDeTokens, pilaDeTags);
-    }catch(...){}
+
 
     wAnC(); // w-ait An-d C-lear
 
